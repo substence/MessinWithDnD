@@ -82,8 +82,10 @@ package
 			
 			this.stage.removeEventListener(MouseEvent.MOUSE_UP, onUp);
 			
-			if (_dragger && event.target)
+			if (_dragger && _dragger == event.target)
 			{
+				_dragger.stopDrag();
+
 				if (_dragger.hitTestObject(_slot) && !_slot.occupant)
 				{
 					_slot.occupant = _dragger;
