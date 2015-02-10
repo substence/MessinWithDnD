@@ -82,10 +82,8 @@ package
 			
 			this.stage.removeEventListener(MouseEvent.MOUSE_UP, onUp);
 			
-			if (_dragger && _dragger == event.target)
+			if (_dragger)
 			{
-				_dragger.stopDrag();
-
 				if (_dragger.hitTestObject(_slot) && !_slot.occupant)
 				{
 					_slot.occupant = _dragger;
@@ -96,16 +94,23 @@ package
 					cancelDrag();//TweenLite.to(_dragger, .5, {x:_lastKnownPosition.x, y:_lastKnownPosition.y, ease:Elastic.easeOut});
 				}
 			}
+			endDrag();
 		}
-
 		
 		private function cancelDrag():void
 		{
-			trace("outside ");
+			if (_dragger)
+			{
+				TweenLite.to(_dragger, .5, {x:_lastKnownPosition.x, y:_lastKnownPosition.y, ease:Elastic.easeOut});
+			}
+			endDrag()
+		}
+		
+		private function endDrag():void
+		{
 			if (_dragger)
 			{
 				_dragger.stopDrag();
-				TweenLite.to(_dragger, .5, {x:_lastKnownPosition.x, y:_lastKnownPosition.y, ease:Elastic.easeOut});
 				if (_ghost)
 				{
 					removeChild(_ghost);
