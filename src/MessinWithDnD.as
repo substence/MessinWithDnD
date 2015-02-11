@@ -5,26 +5,21 @@ package
 	import com.greensock.TweenLite;
 	import com.greensock.easing.Elastic;
 	
-	import flash.display.Bitmap;
 	import flash.display.DisplayObject;
-	import flash.display.MovieClip;
-	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	
-	import org.osmf.elements.BeaconElement;
-	
 	public class MessinWithDnD extends Sprite
 	{
-		private var _lastKnownPosition:Point;
+		private static const _EMPTY_POINT:Point = new Point();
 		private var _dragger:IDraggableOccupant;
-		private var _ghost:DisplayObject;
-
+		private var _ghost:IDraggableOccupant;
 		private var _slots:Vector.<TestSlot> = new Vector.<TestSlot>();
-		 
-		private var _debugLine:Shape;
+		private var _lastKnownPosition:Point;
+		
+		private var _foreground:Sprite;
 		
 		public function MessinWithDnD()
 		{
@@ -51,16 +46,21 @@ package
 				}
 			}
 			addEventListener(MouseEvent.MOUSE_DOWN, onDown);
+			
+			_foreground = new Sprite();
+			addChild(_foreground);
 		}
 		
 		protected function onEnterFrame(event:Event):void
 		{
 			graphics.clear();
-			if (_dragger && _dragger.slot)
+			if (_dragger)
 			{
-				graphics.lineStyle(1, 0xFF0000, .25);
-				graphics.lineTo(_lastKnownPosition.x, _lastKnownPosition.y);
-				graphics.lineTo(_dragger.slot.graphic.x, _dragger.slot.graphic.y);
+				var slot:IDraggableSlot = getViableSlotForOccupant(_dragger);
+				if (slot)
+				{
+					slot.previewOccupant = _ghost;
+				}
 			}
 		}
 		
@@ -72,15 +72,14 @@ package
 			{
 				_dragger = IDraggableOccupant(event.target);
 				_dragger.graphic.startDrag();
+				
+				_dragger.slot.graphic.parent.setChildIndex(_dragger.slot.graphic, _dragger.slot.graphic.parent.numChildren - 1);
 				_lastKnownPosition = new Point(_dragger.graphic.x, _dragger.graphic.y);
 				this.stage.addEventListener(MouseEvent.MOUSE_UP, onUp);
 				
-				var sourceClass:Class = Object(_dragger).constructor;
-				_ghost = new sourceClass();
-				_ghost.alpha = .25;
-				_ghost.x = _dragger.graphic.x;
-				_ghost.y = _dragger.graphic.y;
-				//addChild(_ghost);
+				_ghost = _dragger.clone();
+				_ghost.graphic.alpha = .25;
+				_dragger.slot.previewOccupant = _ghost;
 			}
 		}
 		
@@ -122,20 +121,25 @@ package
 		
 		private function getViableSlotForOccupant(occupant:IDraggableOccupant):IDraggableSlot
 		{
-			var lostViableSlot:IDraggableSlot;
+			var bestViableSlot:IDraggableSlot;
+			var bestDistance:Number = Number.MAX_VALUE;
+			const occupantCenterPosition:Point = occupant.graphic.localToGlobal(_EMPTY_POINT);
+			//trace("occupoant position" + occupantCenterPosition);
 
 			for each (var slot:IDraggableSlot in _slots) 
 			{
-				if (occupant.graphic.hitTestObject(slot.graphic))
+				const slotCenterPosition:Point = slot.graphic.localToGlobal(_EMPTY_POINT);
+				const distance:Number = Point.distance(occupantCenterPosition, slotCenterPosition);
+				//trace("touching " + Object(slot).name + " which is " + distance + " away");
+				if (distance < bestDistance)
 				{
-					trace("touching " + Object(slot).name);
-					if (occupant.slot != slot)
-					{
-						lostViableSlot = slot;
-					}
+					bestDistance = distance;
+					bestViableSlot = slot;
 				}
 			}
-			return lostViableSlot;
+			//trace("picked " + Object(bestViableSlot).name);
+
+			return bestViableSlot;
 		}
 		
 		private function cancelDrag():void
@@ -152,10 +156,7 @@ package
 			if (_dragger)
 			{
 				_dragger.graphic.stopDrag();
-				if (_ghost && this.contains(_ghost))
-				{
-					removeChild(_ghost);
-				}
+				_ghost.slot.previewOccupant = null;
 				_ghost = null;				
 				_dragger = null;
 			}

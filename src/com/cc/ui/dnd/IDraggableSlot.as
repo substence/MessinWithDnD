@@ -7,5 +7,6 @@ package com.cc.ui.dnd
 		function get graphic():DisplayObject;
 		function get occupant():IDraggableOccupant;
 		function set occupant(value:IDraggableOccupant):void;
+		function set previewOccupant(value:IDraggableOccupant):void;
 	}
 }

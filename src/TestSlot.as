@@ -11,6 +11,7 @@ package
 	
 	public class TestSlot extends Sprite implements IDraggableSlot
 	{
+		private var _previewOccupant:IDraggableOccupant;
 		private var _occupant:IDraggableOccupant;
 		private var _background:Shape;
 		
@@ -42,6 +43,22 @@ package
 		public function get graphic():DisplayObject
 		{
 			return this;
+		}
+		
+		public function set previewOccupant(value:IDraggableOccupant):void
+		{
+			if (value)
+			{
+				_previewOccupant = value;
+				_previewOccupant.slot = this;
+				addChild(_previewOccupant.graphic);
+			}
+			else
+			{
+				removeChild(_previewOccupant.graphic);
+				_previewOccupant.slot = null;
+				_previewOccupant = null;
+			}
 		}
 	}
 }

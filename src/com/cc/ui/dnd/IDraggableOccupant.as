@@ -8,5 +8,6 @@ package com.cc.ui.dnd
 		function get graphic():Sprite;
 		function get slot():IDraggableSlot;
 		function set slot(value:IDraggableSlot):void;
+		function clone():IDraggableOccupant;
 	}
 }

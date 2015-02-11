@@ -8,11 +8,17 @@ package
 	public class TestOccupant extends Sprite implements IDraggableOccupant
 	{
 		private var _slot:IDraggableSlot;
+		private var _color:uint;
 		
-		public function TestOccupant(slot:IDraggableSlot = null)
+		public function TestOccupant(slot:IDraggableSlot = null, color:uint = 0)
 		{
 			_slot = slot;
-			graphics.beginFill(Math.random() * 0xFFFFFF);
+			if (!color)
+			{
+				color = Math.random() * 0xFFFFFF;
+			}
+			_color = color;
+			graphics.beginFill(_color);
 			graphics.drawRect(0,0, 50, 50);
 			graphics.endFill();
 		}
@@ -30,6 +36,11 @@ package
 		public function get graphic():Sprite
 		{
 			return this;
+		}
+		
+		public function clone():IDraggableOccupant
+		{
+			return new TestOccupant(_slot, _color);
 		}
 	}
 }
