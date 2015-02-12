@@ -37,6 +37,16 @@ package com.cc.ui.dnd
 			_container.addEventListener(MouseEvent.MOUSE_DOWN, onDown);
 		}
 		
+		public function get targetSlot():IDraggableSlot
+		{
+			return _targetSlot;
+		}
+
+		public function get activeOccupant():IDraggableOccupant
+		{
+			return _activeOccupant;
+		}
+
 		protected function onEnterFrame(event:Event):void
 		{
 			_container.graphics.clear();
@@ -50,37 +60,6 @@ package com.cc.ui.dnd
 				const occupantPosition:Point = _activeOccupant.graphic.localToGlobal(EMPTY_POINT);
 				_container.graphics.lineTo(occupantPosition.x + 25, 
 										   occupantPosition.y + 25);
-			}
-			updateStates();
-
-		}
-		
-		private function updateStates():void
-		{
-			if (_activeOccupant)
-			{
-				for each (var slot:IDraggableSlot in _slots) 
-				{
-					if (!slot.occupant)//_activeOccupant.canReside(_slot)
-					{
-						slot.state = SlotStates.POTENTIAL;
-					}
-					else
-					{
-						slot.state = SlotStates.DEFAULT;
-					}
-				}
-				if (_targetSlot)
-				{
-					_targetSlot.state = SlotStates.TARGETED;
-				}
-			}
-			else
-			{
-				for each (slot in _slots) 
-				{
-					slot.state = SlotStates.DEFAULT;
-				}
 			}
 		}
 		

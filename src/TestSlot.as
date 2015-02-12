@@ -4,7 +4,6 @@ package
 	import com.cc.ui.dnd.DragNDropOverlord;
 	import com.cc.ui.dnd.IDraggableOccupant;
 	import com.cc.ui.dnd.IDraggableSlot;
-	import com.cc.ui.dnd.SlotStates;
 	import com.greensock.TweenLite;
 	import com.greensock.easing.Ease;
 	import com.greensock.easing.Elastic;
@@ -16,6 +15,7 @@ package
 	import flash.display.Sprite;
 	import flash.filters.GlowFilter;
 	import flash.geom.Point;
+	import com.cc.ui.dnd.GenericSlotStates;
 	
 	public class TestSlot extends BaseSlot
 	{
@@ -68,19 +68,19 @@ package
 			super.state = value;
 			switch(_state)
 			{
-				case SlotStates.POTENTIAL:
+				case GenericSlotStates.POTENTIAL:
 				{
 					this._graphic.filters = [new GlowFilter(0x00FF00, .5, 8, 8, 6)];
 					break;
 				}
 					
-				case SlotStates.TARGETED:
+				case GenericSlotStates.TARGETED:
 				{
 					this._graphic.filters = [new GlowFilter(0xFF0000, .5, 8, 8, 6)];
 					break;
 				}
 					
-				case SlotStates.DEFAULT:
+				case GenericSlotStates.DEFAULT:
 				default:
 				{
 					this._graphic.filters = [];
