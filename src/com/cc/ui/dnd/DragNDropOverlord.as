@@ -63,15 +63,23 @@ package com.cc.ui.dnd
 				{
 					if (!slot.occupant)//_activeOccupant.canReside(_slot)
 					{
-						slot.state = SlotState.POTENTIAL;
+						slot.state = SlotStates.POTENTIAL;
 					}
+					else
+					{
+						slot.state = SlotStates.DEFAULT;
+					}
+				}
+				if (_targetSlot)
+				{
+					_targetSlot.state = SlotStates.TARGETED;
 				}
 			}
 			else
 			{
 				for each (slot in _slots) 
 				{
-					slot.state = SlotState.DEFAULT;
+					slot.state = SlotStates.DEFAULT;
 				}
 			}
 		}

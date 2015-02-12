@@ -4,7 +4,7 @@ package
 	import com.cc.ui.dnd.DragNDropOverlord;
 	import com.cc.ui.dnd.IDraggableOccupant;
 	import com.cc.ui.dnd.IDraggableSlot;
-	import com.cc.ui.dnd.SlotState;
+	import com.cc.ui.dnd.SlotStates;
 	import com.greensock.TweenLite;
 	import com.greensock.easing.Ease;
 	import com.greensock.easing.Elastic;
@@ -68,13 +68,19 @@ package
 			super.state = value;
 			switch(_state)
 			{
-				case SlotState.POTENTIAL:
+				case SlotStates.POTENTIAL:
+				{
+					this._graphic.filters = [new GlowFilter(0x00FF00, .5, 8, 8, 6)];
+					break;
+				}
+					
+				case SlotStates.TARGETED:
 				{
 					this._graphic.filters = [new GlowFilter(0xFF0000, .5, 8, 8, 6)];
 					break;
 				}
 					
-				case SlotState.DEFAULT:
+				case SlotStates.DEFAULT:
 				default:
 				{
 					this._graphic.filters = [];
