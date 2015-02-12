@@ -1,44 +1,30 @@
 package
 {
+	import com.cc.ui.dnd.BaseOccupant;
 	import com.cc.ui.dnd.IDraggableOccupant;
 	import com.cc.ui.dnd.IDraggableSlot;
 	
 	import flash.display.Sprite;
 	
-	public class TestOccupant extends Sprite implements IDraggableOccupant
+	public class TestOccupant extends BaseOccupant
 	{
-		private var _slot:IDraggableSlot;
 		private var _color:uint;
 		
 		public function TestOccupant(slot:IDraggableSlot = null, color:uint = 0)
 		{
-			_slot = slot;
+			super(slot);
 			if (!color)
 			{
 				color = Math.random() * 0xFFFFFF;
 			}
 			_color = color;
-			graphics.beginFill(_color);
-			graphics.drawRect(0,0, 50, 50);
-			graphics.endFill();
+			_graphic = new Sprite();
+			_graphic.graphics.beginFill(_color);
+			_graphic.graphics.drawRect(0,0, 50, 50);
+			_graphic.graphics.endFill();
 		}
 		
-		public function set slot(value:IDraggableSlot):void
-		{
-			_slot = value;
-		}
-		
-		public function get slot():IDraggableSlot
-		{
-			return _slot;
-		}
-		
-		public function get graphic():Sprite
-		{
-			return this;
-		}
-		
-		public function clone():IDraggableOccupant
+		override public function clone():IDraggableOccupant
 		{
 			return new TestOccupant(_slot, _color);
 		}

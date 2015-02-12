@@ -8,5 +8,6 @@ package com.cc.ui.dnd
 		function get occupant():IDraggableOccupant;
 		function set occupant(value:IDraggableOccupant):void;
 		function set previewOccupant(value:IDraggableOccupant):void;
+		function set state(value:String):void;
 	}
 }

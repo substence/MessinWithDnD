@@ -1,18 +1,24 @@
 package
 {
+	import com.cc.ui.dnd.BaseSlot;
+	import com.cc.ui.dnd.DragNDropOverlord;
 	import com.cc.ui.dnd.IDraggableOccupant;
 	import com.cc.ui.dnd.IDraggableSlot;
+	import com.cc.ui.dnd.SlotState;
 	import com.greensock.TweenLite;
+	import com.greensock.easing.Ease;
 	import com.greensock.easing.Elastic;
+	import com.greensock.easing.Quad;
+	import com.greensock.easing.Strong;
 	
 	import flash.display.DisplayObject;
 	import flash.display.Shape;
 	import flash.display.Sprite;
+	import flash.filters.GlowFilter;
+	import flash.geom.Point;
 	
-	public class TestSlot extends Sprite implements IDraggableSlot
+	public class TestSlot extends BaseSlot
 	{
-		private var _previewOccupant:IDraggableOccupant;
-		private var _occupant:IDraggableOccupant;
 		private var _background:Shape;
 		
 		public function TestSlot()
@@ -21,43 +27,59 @@ package
 			_background.graphics.beginFill(0xcccccc, 1);
 			_background.graphics.drawRect(0,0, 54, 54);
 			_background.graphics.endFill();
-			addChild(_background);
+			_graphic = new Sprite();
+			_graphic.addChild(_background);
 		}
 		
-		public function get occupant():IDraggableOccupant
+		override public function set occupant(value:IDraggableOccupant):void
 		{
-			return _occupant;
-		}
-		
-		public function set occupant(value:IDraggableOccupant):void
-		{
-			_occupant = value;
+			super.occupant = value;
 			if (_occupant)
 			{
-				_occupant.slot = this;
-				addChild(_occupant.graphic);
-				TweenLite.to(_occupant, .5, {x:2, y:2, ease:Elastic.easeOut});
+				if (_occupant.graphic.parent)
+				{
+					var oldGlobalPosition:Point = occupant.graphic.localToGlobal(DragNDropOverlord.EMPTY_POINT);
+					var newLocalPosition:Point = _graphic.globalToLocal(oldGlobalPosition);
+					_graphic.addChild(_occupant.graphic);
+					_occupant.graphic.x = newLocalPosition.x;
+					_occupant.graphic.y = newLocalPosition.y;
+					
+					TweenLite.to(_occupant.graphic, .5, {x:2, y:2, ease:Elastic.easeOut});
+				}
+				else
+				{
+					_occupant.graphic.x = _occupant.graphic.y = 2;
+					_graphic.addChild(_occupant.graphic);
+				}
 			}
 		}
 		
-		public function get graphic():DisplayObject
+		override public function set previewOccupant(value:IDraggableOccupant):void
 		{
-			return this;
+			super.previewOccupant = value;
+			if (_previewOccupant)
+			{
+				_previewOccupant.graphic.x = _previewOccupant.graphic.y = 2;
+			}
 		}
 		
-		public function set previewOccupant(value:IDraggableOccupant):void
+		override public function set state(value:String):void
 		{
-			if (value)
+			super.state = value;
+			switch(_state)
 			{
-				_previewOccupant = value;
-				_previewOccupant.slot = this;
-				addChild(_previewOccupant.graphic);
-			}
-			else
-			{
-				removeChild(_previewOccupant.graphic);
-				_previewOccupant.slot = null;
-				_previewOccupant = null;
+				case SlotState.POTENTIAL:
+				{
+					this._graphic.filters = [new GlowFilter(0xFF0000, .5, 8, 8, 6)];
+					break;
+				}
+					
+				case SlotState.DEFAULT:
+				default:
+				{
+					this._graphic.filters = [];
+					break;
+				}
 			}
 		}
 	}
